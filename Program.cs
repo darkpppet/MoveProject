@@ -8,8 +8,7 @@ class Program
         
         Classifier classifier = new()
         {
-            SrcPath = userInfo.SrcPath!,
-            DestPath = userInfo.DestPath!
+            Path = userInfo.Path!
         };
 
         Console.WriteLine("Start Classyfying");
