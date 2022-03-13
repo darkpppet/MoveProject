@@ -1,14 +1,14 @@
-﻿using System.Text.Json;
+﻿using System.Text.Json.Nodes;
 
 class Program
 {
     public static void Main(string[] args)
     {
-        UserInfo userInfo = JsonSerializer.Deserialize<UserInfo>(File.ReadAllText("userinfo.json"))!;
+        JsonNode userInfo = JsonNode.Parse(File.ReadAllText("userinfo.json"))!;
         
         Classifier classifier = new()
         {
-            Path = userInfo.Path!
+            Path = (string)userInfo["path"]!
         };
 
         Console.WriteLine("Start Classyfying");

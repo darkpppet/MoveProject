@@ -22,14 +22,16 @@ public class Program
 			outputBuilders[key].Append(splitedLine[2]);
 			outputBuilders[key].Append(".cs ");
 		}
+
+		if (!Directory.Exists((string)jsonNode["outputPath"]))
+        	Directory.CreateDirectory((string)jsonNode["outputPath"]);
+		File.WriteAllText((string)jsonNode["outputPath"] + "/order.sh", "#!/bin/bash\r\n");
 		
 		foreach (string key in outputBuilders.Keys)
 		{
 			outputBuilders[key].Append((string)jsonNode["sourcePath"] + $"/{key}");
-
-			if (!Directory.Exists((string)jsonNode["outputPath"]))
-        		Directory.CreateDirectory((string)jsonNode["outputPath"]);
-			File.WriteAllText((string)jsonNode["outputPath"] + $"/order{key}.txt", outputBuilders[key].ToString());
+			
+			File.AppendAllText((string)jsonNode["outputPath"] + "/order.sh", outputBuilders[key].ToString() + "\r\n");
 		}
 	}
 }
