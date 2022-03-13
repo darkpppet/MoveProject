@@ -4,9 +4,46 @@
 
 ---
 
-## MoveProject1
+## MoveProject
 
-**Not Use Anymore**
+랭크별로 폴더에 정리해놓은 백준 문제푼것들 중에 랭크 바뀐거 옮겨주는 프로그램
+
+### src
+ex)
+```
+src/
+├─ BronzeV/
+│    ├─ 1000.cs
+│    ├─ 1001.cs
+│    ...
+...
+```
+### file naming
+`digit[_word].word`
+
+ex) `1000.cs`, `13705_Newton.cs`, `13277.py`... 
+
+### solved.ac api 사용
+
+* [api 문서 링크](https://solvedac.github.io/unofficial-documentation/#/)
+
+* 그 중, [이 api](https://solvedac.github.io/unofficial-documentation/#/operations/getProblemById) 사용
+
+### userinfo.json
+```json
+{
+    "path": "."
+}
+```
+* `path`: 소스들이 있는 경로
+
+---
+
+# Legacy
+
+**(Not Use Anymore)**
+
+## MoveProject1
 
 백준 문제푼거들 랭크별로 폴더에 옮기려고 이동명령어 만드는 프로그램
 
@@ -106,40 +143,3 @@ output/
 * `inputPath`: input.txt의 경로
 * `outputPath`: rename하고 분류한 소스들을 내보낼 경로
 * `sourcePath`: onedrive 소스들이 있는 경로
-
-<br>
-
----
-
-## MoveProject3
-
-랭크별로 폴더에 정리해놓은 백준 문제푼것들 중에 랭크 바뀐거 옮겨주는 프로그램
-
-### src
-ex)
-```
-src/
-├─ BronzeV/
-│    ├─ 1000.cs
-│    ├─ 1001.cs
-│    ...
-...
-```
-### file naming
-`digit[_word].word`
-
-ex) `1000.cs`, `13705_Newton.cs`, `13277.py`... 
-
-### solved.ac api 사용
-
-* [api 문서 링크](https://solvedac.github.io/unofficial-documentation/#/)
-
-* 그 중, [이 api](https://solvedac.github.io/unofficial-documentation/#/operations/getProblemById) 사용
-
-### userinfo.json
-```json
-{
-    "path": "."
-}
-```
-* `path`: 소스들이 있는 경로
