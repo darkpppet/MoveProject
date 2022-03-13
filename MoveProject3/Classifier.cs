@@ -46,7 +46,7 @@ class Classifier
 
     public void Classify()
     {
-        string logFileName = $"movelog.txt"; //ex) movelog.txt
+        string logFileName = $"movelog.txt";
         File.AppendAllText(logFileName, $"{DateTime.Now.ToString("G")}\r\n\r\n");
 
         int moveCount = 1;

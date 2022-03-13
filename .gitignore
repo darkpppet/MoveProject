@@ -1,4 +1,10 @@
-bin/
-obj/
-*.txt
-*.csproj
+src/
+**/input/
+**/output/
+**/order/
+
+**/bin/
+**/obj/
+**/*.csproj
+
+**/*.txt
