@@ -15,6 +15,7 @@ Bronze III 2739	구구단
 1.95
 ...
 ```
+solved.ac 페이지 가서 드래그하고 복사하면 이렇게 나옴
 
 ### output
 ex) `order.sh`
@@ -75,6 +76,7 @@ Bronze III 2739	구구단
 1.95
 ...
 ```
+solved.ac 페이지 가서 드래그하고 복사하면 이렇게 나옴
 
 ### output
 ex)
