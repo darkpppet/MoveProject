@@ -1,3 +1,9 @@
+## 공통
+
+.NET 6.0
+
+---
+
 ## MoveProject1
 
 **Not Used**
