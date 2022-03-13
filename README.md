@@ -6,7 +6,7 @@
 
 ## MoveProject1
 
-**Not Used**
+**Not Use Anymore**
 
 백준 문제푼거들 랭크별로 폴더에 옮기려고 이동명령어 만드는 프로그램
 
@@ -51,7 +51,7 @@ mv 2739.cs ... src/BronzeIII
 
 ## MoveProject2
 
-**Not Used**
+**Not Use Anymore**
 
 원드라이브에 있던 백준 문제푼것들 rename + 티어별로 폴더에 분류하는 프로그램
 
