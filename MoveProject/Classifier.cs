@@ -1,85 +1,109 @@
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using System.Text.Json.Nodes;
 
 class Classifier
 {
-    private readonly HttpClient httpClient = new(); //instanace which get response from api
+    private readonly HttpClient httpClient = new()
+    {
+        Timeout = TimeSpan.FromSeconds(60)
+    }; //instanace which get response from api
 
-    private const string apiUrlBody = @"https://solved.ac/api/v3/problem/show?problemId="; //appending problem ID to this is real api url; ex) ApiUrlBody + "1000";
-    private const string logFileName = $"movinglog.txt";
+    private const string ApiUrlBody = @"https://solved.ac/api/v3/problem/lookup?problemIds="; //appending problem ID to this is real api url; ex) ApiUrlBody + "1000";
+    private const string LogFileName = $"movinglog.txt";
 
     public string Path { get; set; } = "."; //sources folder path
 
-    private readonly Regex fileNameRegex = new(@"^\d+(_\w*)?\.\w+$"); //digit[_word].word; ex) 13705_Binary.cs, 1000.cs, ...
-    private readonly Regex fileNameAdditionalRegex = new(@"(_\w*)?\.\w+"); //[_word].word; ex) _Newton.cs
+    private readonly Regex FileNameRegex = new(@"^\d+(_\w*)?\.\w+$"); //digit[_word].word; ex) 13705_Binary.cs, 1000.cs, ...
+    private readonly Regex FileNameAdditionalRegex = new(@"(_\w*)?\.\w+"); //[_word].word; ex) _Newton.cs
 
+    private Dictionary<string, string> ProblemsOrigin = new();
+    private Dictionary<string, string> ProblemsNew = new();
+    
+    public Classifier()
+    {
+        httpClient.DefaultRequestHeaders.Add("User-Agent", "Mover");
+    }
+    
     public void Classify()
     {
         WriteLog($"{DateTime.Now:G}");
-
+        
         int logCount = 1;
-        int moveCount = 0;
         int errorCount = 0;
         int readCount = 0;
-
+        int moveCount = 0;
+        
         DirectoryInfo directoryInfo = new(Path);
-
         foreach (var rankDirectory in directoryInfo.GetDirectories()) //rank folders
         {
             string originRank = rankDirectory.Name; //rank folder name
 
             foreach (var file in rankDirectory.GetFiles()) //source files
             {
-                if (fileNameRegex.IsMatch(file.Name)) //digit[_word].word; ex) 13705_Binary.cs, 1000.cs, ...
+                if (FileNameRegex.IsMatch(file.Name)) //digit[_word].word; ex) 13705_Binary.cs, 1000.cs, ...
                 {
                     readCount++;
-                    do
-                    {
-                        string problemID = fileNameAdditionalRegex.Replace(file.Name, ""); //ex) "1000"
-                        Console.Write($"  {problemID, 6}...");
-
-                        try
-                        {
-                            string response = httpClient.GetStringAsync(apiUrlBody + problemID).Result;
-                            JsonNode responseNode = JsonNode.Parse(response)!;
-
-                            int level = (int)responseNode["level"]!;
-                            string nowRank = RankLevelToRankString(level);
-
-                            if (nowRank != originRank)
-                            {
-                                moveCount++;
-                                if (!Directory.Exists(Path + '/' + nowRank))
-                                {
-                                    Directory.CreateDirectory(Path + '/' + nowRank);
-                                }
-                                File.Move(file.FullName, Path + '/' + nowRank + '/' + file.Name);
-                                WriteLog(logCount++, problemID, $"{originRank} → {nowRank}");
-                                Console.WriteLine("ok(move)");
-                            }
-                            else
-                            {
-                                Console.WriteLine("ok(not move)");
-                            }
-                        }
-                        catch (Exception)
-                        {
-                            errorCount++;
-                            WriteLog(logCount++, problemID, "error");
-                            Console.Write($"error: wating 1 minutes...");
-                            Thread.Sleep(60 * 1000);
-                            continue;
-                        }
-                        break;
-                    } while (true);
+                    ProblemsOrigin[file.Name] = originRank;
                 }
             }
         }
+        
+        var queryStrings = ProblemsOrigin.Keys
+            .Select((value, index) => (value, index))
+            .GroupBy(x => x.index / 100)
+            .Select(group => string.Join("%2C", group.Select(x => FileNameToProblemId(x.value))))
+            .ToList();
 
-        WriteLog($"read {readCount} files, move {moveCount} files, occur {errorCount} errors");
+        foreach (var queryString in queryStrings)
+        {
+            string response = httpClient.GetStringAsync(ApiUrlBody + queryString).Result;
+                
+            JsonNode responseNode = JsonNode.Parse(response)!;
+            JsonArray items = responseNode.AsArray();
+
+            foreach (var item in items)
+            {
+                string problemId = item["problemId"].ToString();
+                string rank = RankLevelToRankString((int)item["level"]);
+                
+                ProblemsNew[problemId] = rank;
+            }
+        }
+
+        foreach (var fileName in ProblemsOrigin.Keys)
+        {
+            string problemId = FileNameToProblemId(fileName);
+            try
+            {
+                if (ProblemsOrigin[fileName] != ProblemsNew[problemId])
+                {
+                    moveCount++;
+                
+                    if (!Directory.Exists($"{Path}/{ProblemsNew[problemId]}"))
+                        Directory.CreateDirectory($"{Path}/{ProblemsNew[problemId]}");
+                
+                    string srcPath = $"{Path}/{ProblemsOrigin[fileName]}/{fileName}";
+                    string destPath = $"{Path}/{ProblemsNew[problemId]}/{fileName}";
+                    File.Move(srcPath, destPath);
+                
+                    WriteLog(logCount++, problemId, $"{ProblemsOrigin[fileName]} → {ProblemsNew[problemId]}");
+                    Console.WriteLine($"{problemId}: {ProblemsOrigin[fileName]} → {ProblemsNew[problemId]}");
+                }
+            }
+            catch (KeyNotFoundException)
+            {
+                errorCount++;
+                WriteLog(logCount++, problemId, "no problemId error");
+                Console.Write($"{problemId}: no problemId error");
+            }
+        }
+
+        WriteLog($"\r\nread {readCount} files, move {moveCount} files, occur {errorCount} errors");
         Console.WriteLine($"read {readCount} files, move {moveCount} files, occur {errorCount} errors");
     }
 
+    private string FileNameToProblemId(string filename) => FileNameAdditionalRegex.Replace(filename, "");
+    
     private string RankLevelToRankString(int level)
     {
         if (level == 0)
@@ -113,11 +137,11 @@ class Classifier
 
     private void WriteLog(string text)
     {
-        File.AppendAllText(logFileName, $"{text}\r\n\r\n");
+        File.AppendAllText(LogFileName, $"{text}\r\n\r\n");
     }
 
     private void WriteLog(int index, string id, string text)
     {
-        File.AppendAllText(logFileName, $"#{index, 4} [{id, 6}]: {text}\r\n");
+        File.AppendAllText(LogFileName, $"#{index, 4} [{id, 6}]: {text}\r\n");
     }
 }

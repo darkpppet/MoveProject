@@ -27,7 +27,7 @@ ex) `1000.cs`, `13705_Newton.cs`, `13277.py`...
 
 * [api 문서 링크](https://solvedac.github.io/unofficial-documentation/#/)
 
-* 그 중, [이 api](https://solvedac.github.io/unofficial-documentation/#/operations/getProblemById) 사용
+* 그 중, [이 api](https://solvedac.github.io/unofficial-documentation/#/operations/getProblemsByIdList) 사용
 
 ### userinfo.json
 ```json
@@ -44,6 +44,14 @@ ex) `1000.cs`, `13705_Newton.cs`, `13277.py`...
   - 각 티어의 I단계 폴더가 생성되지 않는 오류 수정
   - 더 이상 사용되지 않는 WebClient를 HttpClient로 변경
   - 로그 파일 서식 수정
+
+* 2024.09.15
+  - 사용 api 변경
+    - 더 이상 [이 api](https://solvedac.github.io/unofficial-documentation/#/operations/getProblemById)를 사용하지 않습니다
+    - [이 api](https://solvedac.github.io/unofficial-documentation/#/operations/getProblemsByIdList)로 100문제씩 가져오게 됩니다
+    - 따라서 429 error Sleep도 더 이상 하지 않습니다
+    - 속도가 대폭 증가했습니다
+  - RequestHeader를 추가하여 정상적으로 데이터를 가져옵니다
 
 ---
 
