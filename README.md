@@ -1,12 +1,8 @@
-## 공통
-
-.NET 6.0
-
----
-
 ## MoveProject
 
 랭크별로 폴더에 정리해놓은 백준 문제푼것들 중에 랭크 바뀐거 옮겨주는 프로그램
+
+.NET 8.0
 
 ### src
 ex)
@@ -32,7 +28,7 @@ ex) `1000.cs`, `13705_Newton.cs`, `13277.py`...
 ### userinfo.json
 ```json
 {
-    "path": "."
+    "path": "./Baekjoon"
 }
 ```
 * `path`: 소스들이 있는 경로
@@ -58,6 +54,8 @@ ex) `1000.cs`, `13705_Newton.cs`, `13277.py`...
 # Legacy
 
 **(Not Use Anymore)**
+
+.NET 6.0
 
 ## MoveProject1
 
