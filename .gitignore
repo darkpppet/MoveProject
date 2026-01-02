@@ -1,0 +1,13 @@
+.vs/
+.vscode/
+.idea/
+
+**/src/
+**/input/
+**/output/
+
+**/bin/
+**/obj/
+**/*.csproj
+
+**/*.txt
